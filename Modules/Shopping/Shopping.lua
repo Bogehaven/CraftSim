@@ -475,6 +475,43 @@ function CraftSim.SHOPPING:CreateShoppingListFromCraftQueue()
     GUTIL:ContinueOnAllItemsLoaded(itemsToLoad, publishShoppingList)
 end
 
+---@return boolean
+function CraftSim.SHOPPING:IsTSMAvailable()
+    return C_AddOns.IsAddOnLoaded(CraftSim.CONST.SUPPORTED_PRICE_API_ADDONS[1]) and TSM_API ~= nil
+end
+
+--- Builds a TradeSkillMaster shopping search filter for the craft queue's missing reagents:
+--- one `i:<itemID>/x<quantity>` part per reagent, joined by `;`. TSM has no API to start a search
+--- or save one from another addon, so the filter is pasted into TSM's Shopping search box.
+--- Each reagent quality has its own itemID, so `i:<itemID>` already pins the quality.
+---@return string? filter nil when nothing is missing
+---@return number numItems
+function CraftSim.SHOPPING:GetTSMShoppingSearchFilter()
+    local parts = {}
+    for _, entry in ipairs(self:GetMissingReagentsFromCraftQueue(false)) do
+        local quantity = math.ceil(entry.quantity or 0)
+        if entry.itemID and quantity > 0 then
+            tinsert(parts, string.format("i:%d/x%d", entry.itemID, quantity))
+        end
+    end
+    if #parts == 0 then
+        return nil, 0
+    end
+    return table.concat(parts, ";"), #parts
+end
+
+--- Shows the craft queue's TSM shopping search filter in a copy box.
+function CraftSim.SHOPPING:ShowTSMShoppingSearch()
+    local filter, numItems = self:GetTSMShoppingSearchFilter()
+    if not filter then
+        CraftSim.DEBUG:SystemPrint(f.l("CraftSim: ") .. f.r(L("SHOPPING_TSM_SEARCH_NOTHING_MISSING")))
+        return
+    end
+    CraftSim.UTIL:ShowTextCopyBox(filter)
+    CraftSim.DEBUG:SystemPrint(f.l("CraftSim: ") ..
+        string.format(L("SHOPPING_TSM_SEARCH_CREATED"), f.bb(tostring(numItems))))
+end
+
 ---@param itemID number
 ---@param boughtQuantity number
 function CraftSim.SHOPPING:OnConfirmCommoditiesPurchase(itemID, boughtQuantity)
@@ -916,6 +953,26 @@ function CraftSim.SHOPPING:CreateShoppingListViewFrameIfNeeded()
             })
         end,
     })
+
+    if self:IsTSMAvailable() then
+        content.tsmSearchButton = GGUI.Button({
+            parent = content,
+            anchorParent = content,
+            anchorA = "BOTTOM",
+            anchorB = "BOTTOM",
+            offsetY = 12,
+            adjustWidth = true,
+            sizeX = 15,
+            label = L("SHOPPING_TSM_SEARCH_BUTTON_LABEL"),
+            tooltipOptions = {
+                anchor = "ANCHOR_CURSOR",
+                text = L("SHOPPING_TSM_SEARCH_BUTTON_TOOLTIP"),
+            },
+            clickCallback = function()
+                CraftSim.SHOPPING:ShowTSMShoppingSearch()
+            end,
+        })
+    end
 
     frame:Hide()
 end

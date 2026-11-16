@@ -867,6 +867,12 @@ function CraftSim.LOCAL_EN:GetData()
         CRAFT_QUEUE_SHATTER_MOTE_AUTOMATIC_OWNED = "Automatic (cheapest owned)",
         CRAFT_QUEUE_SHATTER_RIGHT_CLICK_HINT = "\nRight-click to choose mote.",
         CRAFTQUEUE_AUCTIONATOR_SHOPPING_LIST_BUTTON_LABEL = "Create Auctionator Shopping List",
+        SHOPPING_TSM_SEARCH_BUTTON_LABEL = "Create TSM Shopping Search",
+        SHOPPING_TSM_SEARCH_BUTTON_TOOLTIP = "Builds a " .. f.bb("TradeSkillMaster") ..
+            " shopping search for the reagents the craft queue is missing.\n\nPress " .. f.g("Ctrl+C") ..
+            " in the box that opens, then paste it into the search box on TSM's " .. f.bb("Shopping") .. " tab.",
+        SHOPPING_TSM_SEARCH_CREATED = "TSM shopping search for %s items ready: press Ctrl+C, then paste it into TSM's Shopping search.",
+        SHOPPING_TSM_SEARCH_NOTHING_MISSING = "The craft queue is not missing any purchasable reagents.",
         CRAFT_QUEUE_QUEUE_TAB_LABEL = "Craft Queue",
         CRAFT_QUEUE_FLASH_TASKBAR_OPTION_LABEL = "Flash Taskbar on " ..
             f.bb("CraftQueue") .. " craft finished",

@@ -2089,6 +2089,30 @@ function CraftSim.CRAFTQ.UI:Init()
             })
         end
 
+        if CraftSim.SHOPPING:IsTSMAvailable() then
+            -- sits right of the bottom row's button (the Auctionator one when it exists)
+            local bottomButton = queueTab.content.createAuctionatorShoppingList or
+                queueTab.content.shoppingListViewButton
+            ---@type GGUI.Button
+            queueTab.content.createTSMShoppingSearch = GGUI.Button({
+                parent = queueTab.content,
+                anchorParent = bottomButton.frame,
+                anchorA = "LEFT",
+                anchorB = "RIGHT",
+                adjustWidth = true,
+                sizeX = 15,
+                offsetX = 5,
+                clickCallback = function()
+                    CraftSim.SHOPPING:ShowTSMShoppingSearch()
+                end,
+                label = L("SHOPPING_TSM_SEARCH_BUTTON_LABEL"),
+                tooltipOptions = {
+                    anchor = "ANCHOR_CURSOR",
+                    text = L("SHOPPING_TSM_SEARCH_BUTTON_TOOLTIP"),
+                },
+            })
+        end
+
         -- summaries
 
         queueTab.content.totalAverageProfitLabel = GGUI.Text({
@@ -3757,6 +3781,11 @@ function CraftSim.CRAFTQ.UI:UpdateQueueDisplay()
 
     if queueTab.content.createAuctionatorShoppingList then
         queueTab.content.createAuctionatorShoppingList:SetEnabled(CraftSim.CRAFTQ.craftQueue and
+            #CraftSim.CRAFTQ.craftQueue.craftQueueItems > 0)
+    end
+
+    if queueTab.content.createTSMShoppingSearch then
+        queueTab.content.createTSMShoppingSearch:SetEnabled(CraftSim.CRAFTQ.craftQueue and
             #CraftSim.CRAFTQ.craftQueue.craftQueueItems > 0)
     end
 
